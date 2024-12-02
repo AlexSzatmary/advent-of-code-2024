@@ -2,20 +2,21 @@
 import re
 import sys
 import timeit
+from collections import Counter
 
 
-def parse(L: list[str]) -> tuple[list[int], list[int]]:
-    L_left = []
-    L_right = []
+def parse(L: list[str]) -> tuple[Counter[int], Counter[int]]:
+    left = []
+    right = []
     for s in L:
         (a, b) = re.findall(r"\d+", s)
-        L_left.append(int(a))
-        L_right.append(int(b))
-    return sorted(L_left), sorted(L_right)
+        left.append(int(a))
+        right.append(int(b))
+    return Counter(left), Counter(right)
 
 
-def solve(L_left: list[int], L_right: list[int]) -> int:
-    return sum(abs(a - b) for (a, b) in zip(L_left, L_right))
+def solve(left: Counter[int], right: Counter[int]) -> int:
+    return sum(k * left[k] * right[k] for k in left)
 
 
 def main(argv=None):

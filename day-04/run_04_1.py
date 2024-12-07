@@ -18,23 +18,23 @@ def solve(crossword: np.ndarray) -> int:
     count = 0
     for i in range(0, crossword.shape[0]):
         for j in range(0, crossword.shape[1] - 3):
-            count += all(crossword[i, j : j + 4] == XMAS)
-            count += all(crossword[i, j : j + 4] == SMAX)
+            count += np.all(crossword[i, j : j + 4] == XMAS)
+            count += np.all(crossword[i, j : j + 4] == SMAX)
     for i in range(-(crossword.shape[0] - 4), crossword.shape[1] - 3):
         diag = np.diagonal(crossword, i)
         for j in range(0, diag.size - 3):
-            count += all(diag[j : j + 4] == XMAS)
-            count += all(diag[j : j + 4] == SMAX)
+            count += np.all(diag[j : j + 4] == XMAS)
+            count += np.all(diag[j : j + 4] == SMAX)
     crossword = np.rot90(crossword)
     for i in range(0, crossword.shape[0]):
         for j in range(0, crossword.shape[1] - 3):
-            count += all(crossword[i, j : j + 4] == XMAS)
-            count += all(crossword[i, j : j + 4] == SMAX)
+            count += np.all(crossword[i, j : j + 4] == XMAS)
+            count += np.all(crossword[i, j : j + 4] == SMAX)
     for i in range(-(crossword.shape[0] - 4), crossword.shape[1] - 3):
         diag = np.diagonal(crossword, i)
         for j in range(0, diag.size - 3):
-            count += all(diag[j : j + 4] == XMAS)
-            count += all(diag[j : j + 4] == SMAX)
+            count += np.all(diag[j : j + 4] == XMAS)
+            count += np.all(diag[j : j + 4] == SMAX)
     return count
 
 

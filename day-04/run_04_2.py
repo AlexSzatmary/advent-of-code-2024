@@ -8,8 +8,8 @@ def parse(L: list[str]) -> np.ndarray:
     return np.array([[ord(c) for c in s[:-1]] for s in L])
 
 
-def pprint_crossword(crossword: np.ndarray) -> None:
-    print("\n".join("".join([chr(c) for c in row]) for row in crossword))
+def crossword_to_str(crossword: np.ndarray) -> str:
+    return "\n".join("".join([chr(c) for c in row]) for row in crossword)
 
 
 def solve(crossword: np.ndarray) -> int:

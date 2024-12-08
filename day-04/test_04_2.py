@@ -21,6 +21,7 @@ def test_crossword_to_str():
         for input_line, printed_line in zip(inex_1, s.split("\n"))
     )
 
+
 def test_solve():
     word_search = run_04_2.parse(inex_1)
     assert run_04_2.solve(word_search) == 9

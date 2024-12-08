@@ -3,6 +3,7 @@ import sys
 import timeit
 from itertools import pairwise
 
+
 def parse(L: list[str]) -> list[list[int]]:
     return [list(map(int, line.split())) for line in L]
 
@@ -23,7 +24,7 @@ def main(argv=None):
         argv = sys.argv
     if argv[0] == "python":
         argv = argv[1:]
-    with open(argv[1], "r") as hin:
+    with open(argv[1]) as hin:
         L = hin.readlines()
     reports = parse(L)
     start = timeit.default_timer()

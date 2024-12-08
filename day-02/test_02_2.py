@@ -26,4 +26,3 @@ def test_is_safe_with_dampener():
 def test_solve():
     reports = run_02_2.parse(inex_1)
     assert run_02_2.solve(reports) == 4
-

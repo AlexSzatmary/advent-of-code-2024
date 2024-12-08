@@ -37,7 +37,7 @@ def main(argv=None):
         argv = sys.argv
     if argv[0] == "python":
         argv = argv[1:]
-    with open(argv[1], "r") as hin:
+    with open(argv[1]) as hin:
         L = hin.readlines()
     crossword = parse(L)
     start = timeit.default_timer()

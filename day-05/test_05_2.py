@@ -6,7 +6,7 @@ with open(inex_path) as hin:
     inex_1 = hin.readlines()
 
 
-def test_parse():
+def test_parse() -> None:
     rules, updates = run_05_2.parse(inex_1)
     assert len(rules)
     assert rules[-1] == (53, 13)
@@ -14,7 +14,7 @@ def test_parse():
     assert updates[-1] == [97, 13, 75, 29, 47]
 
 
-def test_sort_rules():
+def test_sort_rules() -> None:
     # For this example, the rules are coherent so if you sort them, you get a
     # passable mock update
     rules, _ = run_05_2.parse(inex_1)
@@ -23,7 +23,7 @@ def test_sort_rules():
     assert run_05_2.check_update(rules, sort_rules)
 
 
-def test_partial_solve():
+def test_partial_solve() -> None:
     rules, updates = run_05_2.parse(inex_1)
     references = [[97, 75, 47, 61, 53], [61, 29, 13], [97, 75, 47, 29, 13]]
     for i, update in enumerate(updates[3:]):
@@ -31,6 +31,6 @@ def test_partial_solve():
         assert run_05_2.sort_rules(relevant_rules) == references[i]
 
 
-def test_solve():
+def test_solve() -> None:
     rules, updates = run_05_2.parse(inex_1)
     assert run_05_2.solve(rules, updates) == 123

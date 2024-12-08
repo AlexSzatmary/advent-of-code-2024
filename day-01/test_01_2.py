@@ -6,11 +6,11 @@ with open(inex_path) as hin:
     inex_01 = hin.readlines()
 
 
-def test_parse():
+def test_parse() -> None:
     L_left, L_right = run_01_2.parse(inex_01)
     assert len(L_left) == len(L_right)
 
 
-def test_solve():
+def test_solve() -> None:
     left, right = run_01_2.parse(inex_01)
     assert run_01_2.solve(left, right) == 31

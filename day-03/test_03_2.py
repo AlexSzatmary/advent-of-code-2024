@@ -7,9 +7,9 @@ with open(inex_path) as hin:
 program_1 = inex_1[0]
 
 
-def test_solve():
+def test_solve() -> None:
     assert run_03_2.solve(program_1) == 48
 
 
-def test_solve_without_re():
+def test_solve_without_re() -> None:
     assert run_03_2.solve_without_re(program_1) == 48

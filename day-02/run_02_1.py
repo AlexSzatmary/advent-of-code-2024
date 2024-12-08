@@ -19,7 +19,7 @@ def solve(reports: list[list[int]]) -> int:
     return sum(map(is_safe, reports))
 
 
-def main(argv=None):
+def main(argv: list[str] | None = None) -> None:
     if argv is None:
         argv = sys.argv
     if argv[0] == "python":

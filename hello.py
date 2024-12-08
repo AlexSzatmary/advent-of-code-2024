@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def main():
+def main() -> None:
     print(f"Hello from advent-of-code-{np.sum([2000, 12, 6, 6])}!")
 
 

@@ -18,7 +18,7 @@ def solve(L_left: list[int], L_right: list[int]) -> int:
     return sum(abs(a - b) for (a, b) in zip(L_left, L_right))
 
 
-def main(argv=None):
+def main(argv: list[str] | None = None) -> None:
     if argv is None:
         argv = sys.argv
     if argv[0] == "python":

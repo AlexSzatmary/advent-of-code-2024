@@ -30,7 +30,7 @@ def solve(rules: list[tuple[int, int]], updates: list[list[int]]) -> int:
     )
 
 
-def main(argv=None):
+def main(argv: list[str] | None = None) -> None:
     if argv is None:
         argv = sys.argv
     if argv[0] == "python":

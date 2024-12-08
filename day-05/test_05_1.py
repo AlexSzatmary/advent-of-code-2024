@@ -6,7 +6,7 @@ with open(inex_path) as hin:
     inex_1 = hin.readlines()
 
 
-def test_parse():
+def test_parse() -> None:
     rules, updates = run_05_1.parse(inex_1)
     assert len(rules)
     assert rules[-1] == (53, 13)
@@ -14,12 +14,12 @@ def test_parse():
     assert updates[-1] == [97, 13, 75, 29, 47]
 
 
-def test_check_update():
+def test_check_update() -> None:
     rules, updates = run_05_1.parse(inex_1)
     reference = [True, True, True, False, False, False]
     assert [run_05_1.check_update(rules, update) for update in updates] == reference
 
 
-def test_solve():
+def test_solve() -> None:
     rules, updates = run_05_1.parse(inex_1)
     assert run_05_1.solve(rules, updates) == 143

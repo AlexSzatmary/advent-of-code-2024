@@ -32,7 +32,7 @@ def solve(crossword: np.ndarray) -> int:
     return count
 
 
-def main(argv=None):
+def main(argv: list[str] | None = None) -> None:
     if argv is None:
         argv = sys.argv
     if argv[0] == "python":

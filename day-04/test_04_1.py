@@ -7,13 +7,13 @@ with open(inex_path) as hin:
     inex_1 = hin.readlines()
 
 
-def test_parse():
+def test_parse() -> None:
     word_search = run_04_1.parse(inex_1)
     assert np.size(word_search, 0) == len(inex_1)
     assert np.size(word_search, 1) == len(inex_1[0]) - 1
 
 
-def test_crossword_to_str():
+def test_crossword_to_str() -> None:
     word_search = run_04_1.parse(inex_1)
     s = run_04_1.crossword_to_str(word_search)
     assert all(
@@ -22,6 +22,6 @@ def test_crossword_to_str():
     )
 
 
-def test_solve():
+def test_solve() -> None:
     word_search = run_04_1.parse(inex_1)
     assert run_04_1.solve(word_search) == 18

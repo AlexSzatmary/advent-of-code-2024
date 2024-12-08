@@ -34,7 +34,7 @@ def solve(program: str) -> int:
     )
 
 
-def main(argv=None):
+def main(argv: list[str] | None = None) -> None:
     if argv is None:
         argv = sys.argv
     if argv[0] == "python":

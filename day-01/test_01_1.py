@@ -7,13 +7,13 @@ with open(inex_path) as hin:
     inex_01 = hin.readlines()
 
 
-def test_parse():
+def test_parse() -> None:
     L_left, L_right = run_01_1.parse(inex_01)
     assert len(L_left) == len(L_right)
     for L in [L_left, L_right]:
         assert all(a <= b for a, b in pairwise(L))
 
 
-def test_solve():
+def test_solve() -> None:
     L_left, L_right = run_01_1.parse(inex_01)
     assert run_01_1.solve(L_left, L_right) == 11

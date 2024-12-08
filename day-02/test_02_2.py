@@ -6,14 +6,14 @@ with open(inex_path) as hin:
     inex_1 = hin.readlines()
 
 
-def test_parse():
+def test_parse() -> None:
     reports = run_02_2.parse(inex_1)
     assert len(reports) == 6
     assert all(len(report) == 5 for report in reports)
     assert all(type(level) is int for report in reports for level in report)
 
 
-def test_is_safe_with_dampener():
+def test_is_safe_with_dampener() -> None:
     reports = run_02_2.parse(inex_1)
     references = [True, False, False, True, True, True]
     assert all(
@@ -23,6 +23,6 @@ def test_is_safe_with_dampener():
     assert run_02_2.is_safe_with_dampener([1, 2, 3, 4, 10])
 
 
-def test_solve():
+def test_solve() -> None:
     reports = run_02_2.parse(inex_1)
     assert run_02_2.solve(reports) == 4

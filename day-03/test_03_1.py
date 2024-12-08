@@ -7,5 +7,5 @@ with open(inex_path) as hin:
 program_1 = inex_1[0]
 
 
-def test_solve():
+def test_solve() -> None:
     assert run_03_1.solve(program_1) == 161

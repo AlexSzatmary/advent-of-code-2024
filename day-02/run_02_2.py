@@ -16,10 +16,10 @@ def is_safe(report: list[int]) -> bool:
 
 
 def is_safe_with_dampener(report: list[int]) -> bool:
-    def is_ascending(report, i):
+    def is_ascending(report: list[int], i: int) -> bool:
         return 1 <= report[i + 1] - report[i] <= 3
 
-    def is_descending(report, i):
+    def is_descending(report: list[int], i: int) -> bool:
         return 1 <= report[i] - report[i + 1] <= 3
 
     for condition in [is_ascending, is_descending]:
@@ -44,7 +44,7 @@ def solve(reports: list[list[int]]) -> int:
     return sum(map(is_safe_with_dampener, reports))
 
 
-def main(argv=None):
+def main(argv: list[str] | None = None) -> None:
     if argv is None:
         argv = sys.argv
     if argv[0] == "python":

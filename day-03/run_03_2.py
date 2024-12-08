@@ -24,7 +24,9 @@ def solve_without_re(program: str) -> int:
 
 
 def solve(program: str) -> int:
-    program_scrubbed = re.sub("don't.*", "", re.sub(r"don't\(\).*?do\(\)", "", program))
+    program_scrubbed = re.sub(
+        r"don't.*", "", re.sub(r"don't\(\).*?do\(\)", "", program)
+    )
     return sum(
         starmap(
             lambda a, b: int(a) * int(b),

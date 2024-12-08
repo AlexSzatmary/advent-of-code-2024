@@ -39,7 +39,7 @@ def sort_rules(rules: list[tuple[int, int]]) -> list[int]:
         d_before[after].add(before)
         s_all_nodes.add(after)
         s_all_nodes.add(before)
-    left_node = [node for node in s_all_nodes if node not in d_before][0]
+    left_node = next(node for node in s_all_nodes if node not in d_before)
     L_sorted.append(left_node)
     s_sorted.add(left_node)
     while d_before:

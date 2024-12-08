@@ -166,3 +166,4 @@ scratch*.txt
 *.png
 cookies.txt
 .vscode
+*.dot

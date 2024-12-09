@@ -1,4 +1,4 @@
-from run_06 import parse, solve_1
+from run_06 import parse, solve_1, solve_2
 import numpy as np
 import os
 
@@ -18,3 +18,8 @@ def test_parse() -> None:
 def test_solve_1() -> None:
     obstacles, (start_i, start_j) = parse(inex_1)
     assert solve_1(obstacles, (start_i, start_j)) == 41
+
+
+def test_solve_2() -> None:
+    obstacles, (start_i, start_j) = parse(inex_1)
+    assert solve_2(obstacles, (start_i, start_j)) == 6

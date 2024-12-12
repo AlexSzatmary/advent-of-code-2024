@@ -7,6 +7,8 @@ import timeit
 
 def parse(input_lines: list[str]) -> np.ndarray:
     obstacles = np.zeros((len(input_lines), len(input_lines[0]) - 1), dtype=np.bool_)
+    start_i = -1
+    start_j = -1
     for i, line in enumerate(input_lines):
         obstacles[i, [m.start() for m in re.finditer(r"#", line)]] = True
         if (j := line.find("^")) != -1:

@@ -1,4 +1,4 @@
-from run_07 import parse, is_possible, solve_1
+from run_07 import parse, is_possible, solve_1, is_possible_2, solve_2
 import os
 
 inex_path = os.path.join(os.path.dirname(__file__), "inex-07-1.txt")
@@ -20,8 +20,23 @@ def test_is_possible() -> None:
     for equation, reference in zip(equations, references):
         test_value, terms = equation
         assert is_possible(test_value, 0, terms) == reference
+    assert not is_possible(1, 1, [1, 2, 1])
 
 
 def test_solve_1() -> None:
     equations = parse(inex_1)
     assert solve_1(equations) == 3749
+
+
+def test_is_possible_2() -> None:
+    equations = parse(inex_1)
+    references = [True, True, False, True, True, False, True, False, True]
+    for equation, reference in zip(equations, references):
+        test_value, terms = equation
+        assert is_possible_2(test_value, 0, terms) == reference
+    assert not is_possible_2(1, 1, [1, 2, 1])
+
+
+def test_solve_2() -> None:
+    equations = parse(inex_1)
+    assert solve_2(equations) == 11387

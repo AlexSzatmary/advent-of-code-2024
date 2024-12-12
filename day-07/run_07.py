@@ -27,7 +27,28 @@ def solve_1(equations: list[Equation]) -> int:
     return sum(
         test_value
         for test_value, terms in equations
-        if is_possible(test_value, 0, terms)
+        if is_possible(test_value, terms[0], terms[1:])
+    )
+
+
+def is_possible_2(test_value: int, subtotal: int, terms: list[int]) -> bool:
+    if not terms:
+        return test_value == subtotal
+    elif subtotal > test_value:
+        return False
+    else:
+        return (
+            is_possible_2(test_value, subtotal + terms[0], terms[1:])
+            or is_possible_2(test_value, subtotal * terms[0], terms[1:])
+            or is_possible_2(test_value, int(str(subtotal) + str(terms[0])), terms[1:])
+        )
+
+
+def solve_2(equations: list[Equation]) -> int:
+    return sum(
+        test_value
+        for test_value, terms in equations
+        if is_possible_2(test_value, terms[0], terms[1:])
     )
 
 
@@ -43,7 +64,7 @@ def main(argv: list[str] | None = None) -> None:
     if "1" in argv:
         print(solve_1(equations))
     elif "2" in argv:
-        pass
+        print(solve_2(equations))
     stop = timeit.default_timer()
     if "time" in argv:
         print("Time:", stop - start)

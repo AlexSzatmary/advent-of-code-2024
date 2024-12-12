@@ -167,3 +167,4 @@ scratch*.txt
 cookies.txt
 .vscode
 *.dot
+.DS_Store

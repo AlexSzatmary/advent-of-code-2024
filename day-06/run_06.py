@@ -17,7 +17,7 @@ def parse(input_lines: list[str]) -> np.ndarray:
     return obstacles, (start_i, start_j)
 
 
-def walk(obstacles: np.ndarray, start_ij: tuple[int, int]) -> tuple[int, bool]:
+def walk(obstacles: np.ndarray, start_ij: tuple[int, int]) -> tuple[np.ndarray, bool]:
     i, j = start_ij
     visited = np.zeros((obstacles.shape[0], obstacles.shape[1], 4), dtype=np.bool_)
     # visited[i, j] = True

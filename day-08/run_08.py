@@ -14,7 +14,7 @@ def parse(input_lines: list[str]) -> dict[str, list[tuple[int, int]]]:
     return frequencies_antennas
 
 
-def find_antinodes(
+def find_antinodes_1(
     frequencies_antennas: dict[str, list[tuple[int, int]]], imax: int, jmax: int
 ) -> set[tuple[int, int]]:
     antinodes = set()
@@ -35,7 +35,45 @@ def find_antinodes(
 def solve_1(
     frequencies_antennas: dict[str, list[tuple[int, int]]], imax: int, jmax: int
 ) -> int:
-    antinodes = find_antinodes(frequencies_antennas, imax, jmax)
+    antinodes = find_antinodes_1(frequencies_antennas, imax, jmax)
+    return len(antinodes)
+
+
+def find_antinodes_2(
+    frequencies_antennas: dict[str, list[tuple[int, int]]], imax: int, jmax: int
+) -> set[tuple[int, int]]:
+    antinodes = set()
+    for antennas in frequencies_antennas.values():
+        antinodes.update(antennas)  # add all antennas, which are now all antinodes
+        for p in range(0, len(antennas) - 1):
+            for q in range(p + 1, len(antennas)):
+                p_i, p_j = antennas[p]
+                q_i, q_j = antennas[q]
+
+                k = 1
+                while True:
+                    a_i, a_j = p_i + k * (p_i - q_i), p_j + k * (p_j - q_j)
+                    if 0 <= a_i < imax and 0 <= a_j < jmax:
+                        antinodes.add((a_i, a_j))
+                    else:
+                        break
+                    k += 1
+
+                k = 1
+                while True:
+                    a_i, a_j = p_i - k * (p_i - q_i), p_j - k * (p_j - q_j)
+                    if 0 <= a_i < imax and 0 <= a_j < jmax:
+                        antinodes.add((a_i, a_j))
+                    else:
+                        break
+                    k += 1
+    return antinodes
+
+
+def solve_2(
+    frequencies_antennas: dict[str, list[tuple[int, int]]], imax: int, jmax: int
+) -> int:
+    antinodes = find_antinodes_2(frequencies_antennas, imax, jmax)
     return len(antinodes)
 
 
@@ -50,6 +88,8 @@ def main(argv: list[str] | None = None) -> None:
     start = timeit.default_timer()
     if "1" in argv:
         print(solve_1(frequencies_antennas, len(input_lines), len(input_lines[0]) - 1))
+    if "2" in argv:
+        print(solve_2(frequencies_antennas, len(input_lines), len(input_lines[0]) - 1))
     stop = timeit.default_timer()
     if "time" in argv:
         print("Time:", stop - start)

@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import pytest
-from run_10 import parse, flood_fill_at_loc, solve_1
+from run_10 import parse, flood_fill_at_loc, solve_1, flood_fill_topo_map, solve_2
 
 
 @pytest.fixture
@@ -35,3 +35,17 @@ def test_flood_fill_at_loc(setup: np.ndarray) -> None:
 
 def test_solve_1(setup: np.ndarray) -> None:
     assert solve_1(setup) == 36
+
+
+def test_solve_2(setup: np.ndarray) -> None:
+    assert solve_2(setup) == 81
+
+
+def test_empty_map_1() -> None:
+    topo_map = np.zeros((5, 5))
+    assert flood_fill_at_loc(topo_map, 1, 1) == 0
+
+
+def test_empty_map_2() -> None:
+    topo_map = np.zeros((5, 5))
+    assert flood_fill_topo_map(topo_map, [(1, 1)]) == 0

@@ -1,3 +1,4 @@
+from collections import defaultdict
 import numpy as np
 import sys
 import timeit
@@ -39,35 +40,31 @@ def solve_1(topo_map: np.ndarray) -> int:
     return count
 
 
-def move_files_2(
-    file_sizes: list[int], gap_sizes: list[int]
-) -> list[tuple[int, int, int]]:
-    files = []
-    files.append((0, file_sizes[0], 0))  # position, size, index
-    for index, (gap_size, file_size) in enumerate(zip(gap_sizes, file_sizes[1:]), 1):
-        files.append((files[-1][0] + files[-1][1] + gap_size, file_size, index))
-    moved_files = files.copy()
-    for file in reversed(files):
-        for i in range(len(moved_files) - 1):
-            if moved_files[i][2] == file[2]:
-                break  # found self
-            elif (
-                moved_files[i + 1][0] - (moved_files[i][0] + moved_files[i][1])
-                >= file[1]
-            ):
-                moved_files.remove(file)
-                new_file = ((moved_files[i][0] + moved_files[i][1]), file[1], file[2])
-                moved_files.insert(i + 1, new_file)
-                break
-    return moved_files
+def flood_fill_topo_map(
+    topo_map: np.ndarray, start_edges: list[tuple[int, int]]
+) -> int:
+    edges = defaultdict.fromkeys(start_edges, 1)
+    # defaultdict used in initializer for consistency
+    for level in range(1, 10):
+        next_edges = defaultdict(lambda: 0)
+        for edge, weight in edges.items():
+            for didj in np.array([[1, 0], [0, 1], [-1, 0], [0, -1]]):
+                new_i, new_j = edge + didj
+                if topo_map[new_i, new_j] == level:
+                    next_edges[new_i, new_j] += weight
+        if not next_edges:
+            return 0
+        edges = next_edges
+    return sum(next_edges.values())
 
 
-def solve_2(blocks: list[int], gaps: list[int]) -> int:
-    moved_blocks = move_files_2(blocks, gaps)
-    count = 0
-    for position, size, index in moved_blocks:
-        count += size * (position + position + size - 1) // 2 * index
-    return count
+def solve_2(topo_map: np.ndarray) -> int:
+    start_edges = []
+    for i in range(1, topo_map.shape[0] - 1):
+        for j in range(1, topo_map.shape[1] - 1):
+            if topo_map[i, j] == 0:
+                start_edges.append((i, j))
+    return flood_fill_topo_map(topo_map, start_edges)
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -81,8 +78,8 @@ def main(argv: list[str] | None = None) -> None:
     start = timeit.default_timer()
     if "1" in argv:
         print(solve_1(topo_map))
-    # if "2" in argv:
-    #     print(solve_2(blocks, gaps))
+    if "2" in argv:
+        print(solve_2(topo_map))
     stop = timeit.default_timer()
     if "time" in argv:
         print("Time:", stop - start)

@@ -1,6 +1,6 @@
 import os
 import pytest
-from run_11 import parse, blink, solve_1
+from run_11 import parse, blink, solve_1, blink_memo, solve_2
 
 
 @pytest.fixture
@@ -37,3 +37,13 @@ def test_blink(setup: list[int]) -> None:
 
 def test_solve_1(setup: list[int]) -> None:
     assert solve_1([125, 17]) == 55312
+
+
+def test_blink_memo(setup: list[int]) -> None:
+    stones = [125, 17]
+    assert sum(blink_memo(stone, 25) for stone in stones) == 55312
+
+
+def test_solve_2(setup: list[int]) -> None:
+    assert solve_2([125, 17])
+    assert solve_2(setup) == 149161030616311

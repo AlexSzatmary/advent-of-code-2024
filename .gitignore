@@ -166,5 +166,6 @@ scratch*.txt
 *.png
 cookies.txt
 .vscode
+.vscode/
 *.dot
 .DS_Store

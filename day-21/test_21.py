@@ -10,6 +10,9 @@ from run_21 import (
     apply_num_pad_sequence,
     apply_d_pad_sequence,
     solve_1,
+    find_my_sequence_n,
+    estimate_code_length,
+    solve_2,
 )
 
 
@@ -60,9 +63,6 @@ def test_find_my_sequence(codes_1: list[str]) -> None:
         "<v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A",
     ]
     for code, reference in zip(codes, references):
-        # print(find_my_sequence(code))
-        print()
-        print(reference)
         assert len(find_my_sequence(code)) == len(reference)
         assert (
             apply_num_pad_sequence(
@@ -74,7 +74,7 @@ def test_find_my_sequence(codes_1: list[str]) -> None:
 
 def test_calculate_complexity(codes_1: list[str]) -> None:
     codes = codes_1
-    assert calculate_complexity(codes[0], find_my_sequence(codes[0])) == 68 * 29
+    assert calculate_complexity(codes[0], len(find_my_sequence(codes[0]))) == 68 * 29
 
 
 def test_solve_1(codes_1: list[str]) -> None:
@@ -82,5 +82,19 @@ def test_solve_1(codes_1: list[str]) -> None:
     assert solve_1(codes) == 126384
 
 
-def test_corner_case() -> None:
+def test_solve_2(codes_1: list[str]) -> None:
+    codes = codes_1
+    assert solve_2(codes) == 154115708116294
+
+
+def test_corner_case() -> None:  # added only for coverage, true value not known
     assert solve_1(["117A"]) == 7488
+
+
+def test_estimate_code_length(codes_1: list[str]) -> None:
+    codes = codes_1
+    n_dpad = 10
+    for code in codes:
+        assert len(find_my_sequence_n(code, n_dpad)) == estimate_code_length(
+            code, n_dpad
+        )

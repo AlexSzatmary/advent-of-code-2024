@@ -23,14 +23,16 @@ for i in range(len(d_pad)):
 def find_num_pad_sequence(fro: str, to: str) -> str:
     fi, fj = NUM_PAD_COORDS[fro]
     ti, tj = NUM_PAD_COORDS[to]
-    if (fi == 3 and tj == 0):  # need to move up first
+    if fi == 3 and tj == 0:  # need to move up first
         horizontal_first = False
-    elif (ti == 3 and fj == 0):
+    elif ti == 3 and fj == 0:
         horizontal_first = True
     elif tj > fj:
         horizontal_first = False
+        # horizontal_first = True
     else:
         horizontal_first = True
+        # horizontal_first = False
     if horizontal_first:
         return "".join(
             [">" * (tj - fj), "<" * (fj - tj), "v" * (ti - fi), "^" * (fi - ti), "A"]
@@ -44,13 +46,23 @@ def find_num_pad_sequence(fro: str, to: str) -> str:
 def find_d_pad_sequence(fro: str, to: str) -> str:
     fi, fj = D_PAD_COORDS[fro]
     ti, tj = D_PAD_COORDS[to]
-    if tj == 0 or (tj > fj and ti > fi):  # need to move down first
+    if tj == 0:  # need to move down first
+        horizontal_first = False
+    elif fj == 0:
+        horizontal_first = True
+    elif tj > fj:
+        horizontal_first = False
+        # horizontal_first = True
+    else:
+        horizontal_first = True
+        # horizontal_first = False
+    if horizontal_first:
         return "".join(
-            ["v" * (ti - fi), "^" * (fi - ti), ">" * (tj - fj), "<" * (fj - tj), "A"]
+            [">" * (tj - fj), "<" * (fj - tj), "v" * (ti - fi), "^" * (fi - ti), "A"]
         )
     else:
         return "".join(
-            [">" * (tj - fj), "<" * (fj - tj), "v" * (ti - fi), "^" * (fi - ti), "A"]
+            ["v" * (ti - fi), "^" * (fi - ti), ">" * (tj - fj), "<" * (fj - tj), "A"]
         )
 
 
@@ -92,24 +104,67 @@ def apply_d_pad_sequence(seq: str) -> str:
     return "".join(result)
 
 
+def dpad_to_dpad(seq: str) -> str:
+    return "".join(find_d_pad_sequence(a, b) for a, b in pairwise("A" + seq))
+
+
 def find_my_sequence(code: str) -> str:
+    return find_my_sequence_n(code, 2)
+
+
+def find_my_sequence_n(code: str, n_dpad: int) -> str:
     code = "A" + code
     num_pad_seq = "".join(find_num_pad_sequence(fro, to) for fro, to in pairwise(code))
     d_pad_seq = "".join(
         find_d_pad_sequence(fro, to) for fro, to in pairwise("A" + num_pad_seq)
     )
-    d_pad_seq = "".join(
-        find_d_pad_sequence(fro, to) for fro, to in pairwise("A" + d_pad_seq)
-    )
+    for _ in range(n_dpad - 1):
+        d_pad_seq = "".join(
+            find_d_pad_sequence(fro, to) for fro, to in pairwise("A" + d_pad_seq)
+        )
     return d_pad_seq
 
 
-def calculate_complexity(code: str, sequence: str) -> int:
-    return int(code[:-1]) * len(sequence)
+def estimate_length(
+    seq: str, n: int, memo: dict[tuple[str, int], int] | None = None
+) -> int:
+    if memo is None:
+        memo = {}
+    if n == 0:
+        return len(seq)
+    if (seq, n) in memo:
+        return memo[seq, n]
+    result = (
+        sum(estimate_length(k + "A", n - 1, memo) for k in dpad_to_dpad(seq).split("A"))
+        - 1
+    )
+    memo[seq, n] = result
+    return result
+
+
+def estimate_code_length(code: str, n_dpad: int) -> int:
+    code = "A" + code
+    num_pad_seq = "".join(find_num_pad_sequence(fro, to) for fro, to in pairwise(code))
+    d_pad_seq = "".join(
+        find_d_pad_sequence(fro, to) for fro, to in pairwise("A" + num_pad_seq)
+    )
+    return estimate_length(d_pad_seq, n_dpad - 1)
+
+
+def calculate_complexity(code: str, seq_length: int) -> int:
+    return int(code[:-1]) * seq_length
 
 
 def solve_1(codes: list[str]) -> int:
-    return sum(calculate_complexity(code, find_my_sequence(code)) for code in codes)
+    return sum(
+        calculate_complexity(code, estimate_code_length(code, 2)) for code in codes
+    )
+
+
+def solve_2(codes: list[str]) -> int:
+    return sum(
+        calculate_complexity(code, estimate_code_length(code, 25)) for code in codes
+    )
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -123,6 +178,8 @@ def main(argv: list[str] | None = None) -> None:
     start = timeit.default_timer()
     if "1" in argv:
         print(solve_1(codes))
+    if "2" in argv:
+        print(solve_2(codes))
 
     stop = timeit.default_timer()
     if "time" in argv:

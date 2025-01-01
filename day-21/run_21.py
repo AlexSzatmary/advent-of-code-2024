@@ -29,10 +29,8 @@ def find_num_pad_sequence(fro: str, to: str) -> str:
         horizontal_first = True
     elif tj > fj:
         horizontal_first = False
-        # horizontal_first = True
     else:
         horizontal_first = True
-        # horizontal_first = False
     if horizontal_first:
         return "".join(
             [">" * (tj - fj), "<" * (fj - tj), "v" * (ti - fi), "^" * (fi - ti), "A"]
@@ -48,14 +46,12 @@ def find_d_pad_sequence(fro: str, to: str) -> str:
     ti, tj = D_PAD_COORDS[to]
     if tj == 0:  # need to move down first
         horizontal_first = False
-    elif fj == 0:
+    elif fj == 0:  # need to move right first
         horizontal_first = True
-    elif tj > fj:
+    elif tj > fj:  # move vertical first if going right
         horizontal_first = False
-        # horizontal_first = True
-    else:
+    else:  # move left first if going left
         horizontal_first = True
-        # horizontal_first = False
     if horizontal_first:
         return "".join(
             [">" * (tj - fj), "<" * (fj - tj), "v" * (ti - fi), "^" * (fi - ti), "A"]

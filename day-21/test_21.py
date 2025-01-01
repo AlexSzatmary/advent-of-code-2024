@@ -41,6 +41,13 @@ def test_find_num_pad_sequence() -> None:
     for (fro, to), reference in zip(pairwise(code), references):
         assert sorted(find_num_pad_sequence(fro, to)) == sorted(reference)
 
+    assert find_num_pad_sequence("1", "9") == "^^>>A"
+    assert find_num_pad_sequence("9", "1") == "<<vvA"
+    assert find_num_pad_sequence("7", "3") == "vv>>A"
+    assert find_num_pad_sequence("3", "7") == "<<^^A"
+    assert find_num_pad_sequence("7", "0") == ">vvvA"
+    assert find_num_pad_sequence("0", "7") == "^^^<A"
+
 
 def test_find_d_pad_sequence() -> None:
     code = "029A"
@@ -51,6 +58,13 @@ def test_find_d_pad_sequence() -> None:
         find_d_pad_sequence(fro, to) for fro, to in pairwise("A" + num_pad_seq)
     )
     assert sorted(d_pad_seq) == sorted(reference)
+
+    assert find_d_pad_sequence("^", ">") == "v>A"
+    assert find_d_pad_sequence(">", "^") == "<^A"
+    assert find_d_pad_sequence("v", "A") == "^>A"
+    assert find_d_pad_sequence("A", "v") == "<vA"
+    assert find_d_pad_sequence("<", "^") == ">^A"
+    assert find_d_pad_sequence("^", "<") == "v<A"
 
 
 def test_find_my_sequence(codes_1: list[str]) -> None:

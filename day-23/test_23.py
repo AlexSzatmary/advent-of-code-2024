@@ -5,6 +5,9 @@ from run_23 import (
     parse,
     find_triples_including_t,
     solve_1,
+    find_largest_cluster,
+    find_largest_cluster_including,
+    solve_2,
 )
 
 
@@ -48,3 +51,28 @@ def test_find_triples_including_t(network_1: dict[str, list[str]]) -> None:
 def test_solve_1(network_1: dict[str, list[str]]) -> None:
     network = network_1
     assert solve_1(network) == 7
+
+
+def test_find_largest_cluster(network_1: dict[str, list[str]]) -> None:
+    network = network_1
+    assert find_largest_cluster(network) == ("co,de,ka,ta", 4)
+
+
+def test_find_largest_cluster_including(network_1: dict[str, list[str]]) -> None:
+    network = network_1
+    assert find_largest_cluster_including(
+        network, ["qp"], network["qp"], "co,de,ka,ta", 4
+    ) == (
+        "co,de,ka,ta",
+        4,
+    )
+    largest_cluster, largest_cluster_size = find_largest_cluster_including(
+        network, ["qp"], network["qp"], "qp", 1
+    )
+    assert largest_cluster == "qp,td,wh"
+    assert largest_cluster_size == 3
+
+
+def test_solve_2(network_1: dict[str, list[str]]) -> None:
+    network = network_1
+    assert solve_2(network) == "co,de,ka,ta"

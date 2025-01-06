@@ -1,3 +1,4 @@
+import pathlib
 import re
 import sys
 import timeit
@@ -77,6 +78,121 @@ def solve_1(wires: dict[str, bool], gates: dict[str, tuple[str, OP, str]]) -> in
     return combine_bits(evaluate(wires, gates))
 
 
+# an adder step should look like,
+# x_n XOR y_n -> a
+# a XOR c_n-1 -> z_n
+# x_n AND y_n -> b
+# a AND c_n-1 -> d
+# b OR d -> c_n
+# it could be wired up differently but that's the normal way for the input
+#
+# Things to check for:
+# z not tied to XOR
+# z on XOR tied to x (and y)
+# OR named z
+# OR having an input other than an AND gate
+# AND named z
+# If AND is not on xy, it should be on an XOR on an xy and an OR. If not, one of its
+# input gates is miswired and that should be labeled.
+
+
+def find_bad_z(gates: dict[str, tuple[str, OP, str]]) -> list[str]:
+    return [
+        gate for gate in gates if (gate.startswith("z") and not gates[gate][1] == "XOR")
+    ]
+
+
+def find_gates_that_should_not_be_z(gates: dict[str, tuple[str, OP, str]]) -> list[str]:
+    max_z = max(gates)
+    return [
+        gate
+        for gate in gates
+        if gate.startswith("z") and not gates[gate][1] == "XOR" and gate != max_z
+    ]
+
+
+def find_gates_that_should_be_z(gates: dict[str, tuple[str, OP, str]]) -> list[str]:
+    # an XOR on an xy can't have its targets miswired
+    # so if an XOR doesn't target xy, it must be a z xor
+    return [
+        gate
+        for gate in gates
+        if (
+            not gate.startswith("z")
+            and gates[gate][1] == "XOR"
+            and gates[gate][0][0] not in "xy"
+        )
+    ]
+
+
+def get_bit(gates: dict[str, tuple[str, OP, str]], gate: str) -> str:
+    """
+    For an xor known to not have x or y as an input, find the xor it has as an input,
+    find an xNN or yNN input to that, and get the NN. For example, find 32 for an
+    xor taking an xor taking x32. Outputs as a string, not int.
+    """
+    i0, _op, i1 = gates[gate]
+    target_bit = None
+    for i in [i0, i1]:
+        # one of i0 or i1 should have an input that looks like 'x32', 'XOR', 'y32'.
+        i_0, op, _i_1 = gates[i]
+        if op == "XOR":
+            target_bit = i_0[1:]
+            # pull the "32" from "x32" or "y32", for example.
+    if target_bit is None:
+        msg = f"Gate {gate} cannot find its bit"
+        raise ValueError(msg)
+    return target_bit
+
+
+def find_swapped_gates_full(
+    gates: dict[str, tuple[str, OP, str]],
+) -> tuple[list[str], dict[str, tuple[str, OP, str]]]:
+    gates = gates.copy()
+    gates_that_should_not_be_z = find_gates_that_should_not_be_z(gates)
+    gates_that_should_be_z = find_gates_that_should_be_z(gates)
+    for gate in gates_that_should_be_z:
+        target_bit = get_bit(gates, gate)
+        gates["z" + target_bit], gates[gate] = gates[gate], gates["z" + target_bit]
+    # now 3 of the 4 swaps are healed. I need to find the last swap.
+    max_z = max(gates)
+    # by inspection, I found one z gate that still did not take an xor that takes xy
+    z4 = next(
+        gate
+        for gate, (i0, op, i1) in gates.items()
+        if gate.startswith("z")
+        and gate != "z00"
+        and gate != max_z
+        and gates[i0][1] != "XOR"
+        and gates[i1][1] != "XOR"
+    )
+    weird_and = gates[z4][0] if gates[z4][0][1] == "AND" else gates[z4][2]
+    # by inspection, I found one OR that takes an XOR, which z4 should target
+    weird_or = next(
+        gate
+        for gate, (i0, op, i1) in gates.items()
+        if op == "OR" and (gates[i0][1] == "XOR" or gates[i1][1] == "XOR")
+    )
+    weird_xor = (
+        gates[weird_or][0] if gates[weird_or][0][1] == "XOR" else gates[weird_or][2]
+    )
+    gates[weird_xor], gates[weird_and] = gates[weird_and], gates[weird_xor]
+    return [
+        *gates_that_should_not_be_z,
+        *gates_that_should_be_z,
+        weird_and,
+        weird_xor,
+    ], gates
+
+
+def find_swapped_gates(gates: dict[str, tuple[str, OP, str]]) -> list[str]:
+    return find_swapped_gates_full(gates)[0]
+
+
+def solve_2(_wires: dict[str, bool], gates: dict[str, tuple[str, OP, str]]) -> str:
+    return ",".join(sorted(find_swapped_gates(gates)))
+
+
 def main(argv: list[str] | None = None) -> None:
     if argv is None:
         argv = sys.argv
@@ -86,8 +202,21 @@ def main(argv: list[str] | None = None) -> None:
         input_lines = hin.readlines()
     wires, gates = parse(input_lines)
     start = timeit.default_timer()
+    if "graphviz" in argv:
+        with open(pathlib.Path(argv[-1]).stem + ".dot", "w") as hout:
+            shapes = {"AND": "box", "OR": "oval", "XOR": "diamond"}
+            hout.write("digraph {\n")
+            for node, (input0, op, input1) in gates.items():
+                hout.write(f"{node} [shape={shapes[op]}]")
+                hout.write(f"{input0} -> {node}\n")
+                hout.write(f"{input1} -> {node}\n")
+            hout.write("}\n")
+        # invoke graphviz with, e.g.,
+        # dot -Tpng < inme-05.dot>inme-05.png
     if "1" in argv:
         print(solve_1(wires.copy(), gates))
+    if "2" in argv:
+        print(solve_2(wires, gates))
 
     stop = timeit.default_timer()
     if "time" in argv:

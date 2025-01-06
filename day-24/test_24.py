@@ -7,6 +7,8 @@ from run_24 import (
     evaluate,
     combine_bits,
     solve_1,
+    find_swapped_gates_full,
+    solve_2,
 )
 
 
@@ -25,6 +27,11 @@ def wires_gates_1() -> tuple[dict[str, bool], dict[str, tuple[str, OP, str]]]:
 @pytest.fixture
 def wires_gates_2() -> tuple[dict[str, bool], dict[str, tuple[str, OP, str]]]:
     return parse(load("inex-24-2.txt"))
+
+
+@pytest.fixture
+def wires_gates_me() -> tuple[dict[str, bool], dict[str, tuple[str, OP, str]]]:
+    return parse(load("inme-24.txt"))
 
 
 @pytest.fixture
@@ -107,3 +114,26 @@ def test_solve_1(
 ) -> None:
     wires, gates = wires_gates_2
     assert solve_1(wires.copy(), gates) == 2024
+
+
+def test_find_swapped_gates_full(
+    wires_gates_me: tuple[dict[str, bool], dict[str, tuple[str, OP, str]]],
+) -> None:
+    _wires, gates = wires_gates_me
+    _swapped_gates, gates_4 = find_swapped_gates_full(gates)
+
+    # two random integers
+    x = 15564911598446
+    y = 16228481894866
+    wires = {
+        **{f"x{i:02}": bool(x & (1 << i)) for i in range(45)},
+        **{f"y{i:02}": bool(y & (1 << i)) for i in range(45)},
+    }
+    assert combine_bits(evaluate(wires, gates_4)) == x + y
+
+
+def test_solve_2(
+    wires_gates_me: tuple[dict[str, bool], dict[str, tuple[str, OP, str]]],
+) -> None:
+    wires, gates = wires_gates_me
+    assert solve_2(wires, gates) == "gsd,kth,qnf,tbt,vpm,z12,z26,z32"

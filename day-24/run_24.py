@@ -96,12 +96,6 @@ def solve_1(wires: dict[str, bool], gates: dict[str, tuple[str, OP, str]]) -> in
 # input gates is miswired and that should be labeled.
 
 
-def find_bad_z(gates: dict[str, tuple[str, OP, str]]) -> list[str]:
-    return [
-        gate for gate in gates if (gate.startswith("z") and not gates[gate][1] == "XOR")
-    ]
-
-
 def find_gates_that_should_not_be_z(gates: dict[str, tuple[str, OP, str]]) -> list[str]:
     max_z = max(gates)
     return [

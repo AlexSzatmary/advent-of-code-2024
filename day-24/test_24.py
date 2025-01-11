@@ -9,6 +9,7 @@ from run_24 import (
     solve_1,
     find_swapped_gates_full,
     solve_2,
+    get_bit,
 )
 
 
@@ -137,3 +138,28 @@ def test_solve_2(
 ) -> None:
     wires, gates = wires_gates_me
     assert solve_2(wires, gates) == "gsd,kth,qnf,tbt,vpm,z12,z26,z32"
+
+
+def test_get_bit_raises_error() -> None:
+    assert (
+        int(
+            get_bit(
+                {
+                    "a": ("b", "XOR", "c"),
+                    "b": ("x00", "XOR", "bad"),
+                    "c": ("bad", "AND", "bad"),
+                },
+                "a",
+            )
+        )
+        == 0
+    )
+    with pytest.raises(ValueError):
+        get_bit(
+            {
+                "a": ("b", "XOR", "c"),
+                "b": ("x00", "AND", "bad"),
+                "c": ("bad", "AND", "bad"),
+            },
+            "a",
+        )

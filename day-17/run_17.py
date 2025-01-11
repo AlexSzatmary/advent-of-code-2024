@@ -71,6 +71,22 @@ def solve_1(reg_A: int, reg_B: int, reg_C: int, program: list[int]) -> str:
     return ",".join(map(str, interpret(reg_A, reg_B, reg_C, program)))
 
 
+def solve_2(reg_B: int, reg_C: int, program: list[int]) -> int:
+    # reg_A = 0
+    possible_reg_A = {0}
+    possible_next_reg_A = set()
+    for i in range(len(program) - 1, -1, -1):
+        for reg_A in possible_reg_A:
+            for j in range(8):
+                reg_A_to_try = (reg_A << 3) + j
+                result = interpret(reg_A_to_try, reg_B, reg_C, program)
+                if result == program[i:]:
+                    possible_next_reg_A.add(reg_A_to_try)
+        possible_reg_A = possible_next_reg_A
+        possible_next_reg_A = set()
+    return min(possible_reg_A)
+
+
 def main(argv: list[str] | None = None) -> None:
     if argv is None:
         argv = sys.argv
@@ -82,6 +98,8 @@ def main(argv: list[str] | None = None) -> None:
     start = timeit.default_timer()
     if "1" in argv:
         print(solve_1(reg_A, reg_B, reg_C, program))
+    if "2" in argv:
+        print(solve_2(reg_B, reg_C, program))
 
     stop = timeit.default_timer()
     if "time" in argv:

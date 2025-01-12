@@ -4,6 +4,8 @@ import pytest
 from run_20 import (
     parse,
     walk,
+    render_cheats,
+    find_cheats,
     solve_1,
     solve_2,
 )
@@ -48,7 +50,7 @@ def test_walk(
 def test_solve_1(
     maze_1: tuple[np.ndarray, tuple[int, int], tuple[int, int]],
 ) -> None:
-    start, end, maze = maze_1
+    maze, start, end = maze_1
     cheats_times = [
         (14, 2),
         (14, 4),
@@ -65,13 +67,13 @@ def test_solve_1(
     cumulative_cheats = 0
     for n_cheats, target in reversed(cheats_times):
         cumulative_cheats += n_cheats
-        assert solve_1(start, end, maze, target) == cumulative_cheats
+        assert solve_1(maze, start, end, target) == cumulative_cheats
 
 
 def test_solve_2(
     maze_1: tuple[np.ndarray, tuple[int, int], tuple[int, int]],
 ) -> None:
-    start, end, maze = maze_1
+    maze, start, end = maze_1
     cheats_times = [
         (32, 50),
         (31, 52),
@@ -91,4 +93,15 @@ def test_solve_2(
     cumulative_cheats = 0
     for n_cheats, target in reversed(cheats_times):
         cumulative_cheats += n_cheats
-        assert solve_2(start, end, maze, target) == cumulative_cheats
+        assert solve_2(maze, start, end, target) == cumulative_cheats
+
+
+def test_render_cheats(
+    maze_1: tuple[np.ndarray, tuple[int, int], tuple[int, int]],
+) -> None:
+    maze, start, end = maze_1
+    dist_to_start = walk(maze, start)
+    honest_time = dist_to_start[end[0], end[1]]
+    dist_to_end = walk(maze, end)
+    cheats = find_cheats(dist_to_start, dist_to_end, honest_time)
+    render_cheats(cheats, dist_to_start, honest_time)

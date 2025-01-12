@@ -4,8 +4,10 @@ import pytest
 from run_18 import (
     parse,
     drop_n_bytes,
+    walk,
     solve_1,
     solve_2,
+    render_walls_path,
 )
 
 
@@ -19,6 +21,11 @@ def load(file_name: str) -> list[str]:
 @pytest.fixture
 def wall_ij_1() -> np.ndarray:
     return parse(load("inex-18-1.txt"))
+
+
+@pytest.fixture
+def wall_ij_me() -> np.ndarray:
+    return parse(load("inme-18.txt"))
 
 
 def test_parse(wall_ij_1: np.ndarray) -> None:
@@ -37,3 +44,10 @@ def test_solve_1(wall_ij_1: np.ndarray) -> None:
 def test_solve_2(wall_ij_1: np.ndarray) -> None:
     wall_ij = wall_ij_1
     assert solve_2(wall_ij) == "6,1"
+
+
+def test_get_full_coverage(wall_ij_1: np.ndarray, wall_ij_me: np.ndarray) -> None:
+    solve_2(wall_ij_me)
+    walls = drop_n_bytes(wall_ij_1, 9, 12)
+    path = walk(walls)
+    render_walls_path(walls, path)

@@ -4,18 +4,15 @@ import sys
 import timeit
 
 
-def parse_1(lines: list[str]) -> np.ndarray:
-    if len(lines) > 1024:
-        size = 73
-        fallen_bytes = 1024
-    else:
-        size = 9
-        fallen_bytes = 12
+def parse(lines: list[str]) -> np.ndarray:
+    return np.array([list(map(int, line[:-1].split(","))) for line in lines], dtype=int)
+
+
+def drop_n_bytes(wall_ij: np.ndarray, size: int, n_bytes: int) -> np.ndarray:
     walls = np.ones((size, size), dtype=bool)
     walls[1:-1, 1:-1] = False
-    for line in lines[:fallen_bytes]:
-        j, i = line[:-1].split(",")
-        walls[int(i) + 1, int(j) + 1] = True
+    for wall in wall_ij[:n_bytes]:
+        walls[wall[1] + 1, wall[0] + 1] = True
     return walls
 
 
@@ -37,8 +34,55 @@ def walk(walls: np.ndarray) -> np.ndarray:
     return path
 
 
-def solve_1(walls: np.ndarray) -> int:
+def size_n_bytes(wall_ij: np.ndarray) -> tuple[int, int]:
+    if len(wall_ij) > 1024:
+        size = 73
+        fallen_bytes = 1024
+    else:
+        size = 9
+        fallen_bytes = 12
+    return size, fallen_bytes
+
+
+def solve_1(wall_ij: np.ndarray) -> int:
+    size, fallen_bytes = size_n_bytes(wall_ij)
+    walls = drop_n_bytes(wall_ij, size, fallen_bytes)
     return walk(walls)[-2, -2]
+
+
+def render_walls_path(walls: np.ndarray, path: np.ndarray) -> str:
+    big_num = walls.size
+    rows = []
+    for i in range(walls.shape[0]):
+        rows.append(
+            "".join(
+                "#"
+                if walls[i, j]
+                else str(path[i, j] % 10)
+                if path[i, j] < big_num
+                else "."
+                for j in range(walls.shape[1])
+            )
+        )
+    return "\n".join(rows)
+
+
+def solve_2(wall_ij: np.ndarray) -> str:
+    """
+    Solves using the bisection algorithm
+    """
+    size, _fallen_bytes = size_n_bytes(wall_ij)
+    a = 0
+    c = len(wall_ij) - 1
+    while a < c - 1:
+        b = (a + c) // 2
+        walls = drop_n_bytes(wall_ij, size, b)
+        path = walk(walls)
+        if path[-2, -2] == path[0, 0]:  # if the search for a path is unsuccessful
+            c = b
+        else:
+            a = b
+    return str(wall_ij[a, 0]) + "," + str(wall_ij[a, 1])
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -48,10 +92,12 @@ def main(argv: list[str] | None = None) -> None:
         argv = argv[1:]
     with open(argv[-1]) as hin:
         input_lines = hin.readlines()
-    walls = parse_1(input_lines)
+    walls = parse(input_lines)
     start = timeit.default_timer()
     if "1" in argv:
         print(solve_1(walls))
+    if "2" in argv:
+        print(solve_2(walls))
 
     stop = timeit.default_timer()
     if "time" in argv:

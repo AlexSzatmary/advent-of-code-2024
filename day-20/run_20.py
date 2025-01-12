@@ -64,6 +64,37 @@ def find_cheats(
     return cheats
 
 
+def find_cheats_20(
+    dist_to_start: np.ndarray, dist_to_end: np.ndarray, honest_time: int
+) -> list:
+    """
+    Finds time savings at each passable wall
+    """
+    big_num = dist_to_start[0, 0]
+    cheats = []
+    for i_start in range(1, dist_to_start.shape[0] - 1):
+        for j_start in range(1, dist_to_start.shape[1]):
+            if dist_to_start[i_start, j_start] < big_num:
+                for i_end in range(
+                    max(i_start - 20, 1),
+                    min(i_start + 20 + 1, dist_to_start.shape[0] - 1),
+                ):
+                    # j bounds are loose but easy to write
+                    for j_end in range(
+                        max(j_start - 20, 1),
+                        min(j_start + 20 + 1, dist_to_start.shape[1] - 1),
+                    ):
+                        dist = abs(i_start - i_end) + abs(j_start - j_end)
+                        saving = honest_time - (
+                            dist_to_start[i_start, j_start]
+                            + dist_to_end[i_end, j_end]
+                            + dist
+                        )
+                        if dist <= 20 and saving > 0:
+                            cheats.append(saving)
+    return cheats
+
+
 def count_cheats(
     maze: np.ndarray, start: tuple[int, int], end: tuple[int, int]
 ) -> list[int]:
@@ -75,6 +106,19 @@ def count_cheats(
     dist_to_end = walk(maze, end)
     cheats = find_cheats(dist_to_start, dist_to_end, honest_time)
     return (honest_time - cheats)[cheats < honest_time].tolist()
+
+
+def count_cheats_20(
+    maze: np.ndarray, start: tuple[int, int], end: tuple[int, int]
+) -> list[int]:
+    """
+    Lists time savings by passable wall
+    """
+    dist_to_start = walk(maze, start)
+    honest_time = dist_to_start[end[0], end[1]]
+    dist_to_end = walk(maze, end)
+    cheats = find_cheats_20(dist_to_start, dist_to_end, honest_time)
+    return cheats
 
 
 def render_cheats(
@@ -104,6 +148,12 @@ def solve_1(
     return len([time for time in count_cheats(maze, start, end) if time >= target])
 
 
+def solve_2(
+    maze: np.ndarray, start: tuple[int, int], end: tuple[int, int], target: int
+) -> int:
+    return len([time for time in count_cheats_20(maze, start, end) if time >= target])
+
+
 def main(argv: list[str] | None = None) -> None:
     if argv is None:
         argv = sys.argv
@@ -115,6 +165,8 @@ def main(argv: list[str] | None = None) -> None:
     start = timeit.default_timer()
     if "1" in argv:
         print(solve_1(maze, maze_start, end, 100))  # we have a target of 100 ps
+    if "2" in argv:
+        print(solve_2(maze, maze_start, end, 100))  # we have a target of 100 ps
 
     stop = timeit.default_timer()
     if "time" in argv:

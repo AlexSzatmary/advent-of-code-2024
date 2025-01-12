@@ -5,6 +5,7 @@ from run_20 import (
     parse,
     walk,
     solve_1,
+    solve_2,
 )
 
 
@@ -65,3 +66,29 @@ def test_solve_1(
     for n_cheats, target in reversed(cheats_times):
         cumulative_cheats += n_cheats
         assert solve_1(start, end, maze, target) == cumulative_cheats
+
+
+def test_solve_2(
+    maze_1: tuple[np.ndarray, tuple[int, int], tuple[int, int]],
+) -> None:
+    start, end, maze = maze_1
+    cheats_times = [
+        (32, 50),
+        (31, 52),
+        (29, 54),
+        (39, 56),
+        (25, 58),
+        (23, 60),
+        (20, 62),
+        (19, 64),
+        (12, 66),
+        (14, 68),
+        (12, 70),
+        (22, 72),
+        (4, 74),
+        (3, 76),
+    ]
+    cumulative_cheats = 0
+    for n_cheats, target in reversed(cheats_times):
+        cumulative_cheats += n_cheats
+        assert solve_2(start, end, maze, target) == cumulative_cheats

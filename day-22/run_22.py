@@ -1,5 +1,6 @@
 import sys
 import timeit
+from collections import Counter
 
 
 def parse(lines: list[str]) -> list[int]:
@@ -22,9 +23,39 @@ def find_nth_secret_number(secret_number: int, nth: int) -> int:
 
 def solve_1(secret_numbers: list[int]) -> int:
     return sum(
-        find_nth_secret_number(secret_number, 2000)
-            for secret_number in secret_numbers
+        find_nth_secret_number(secret_number, 2000) for secret_number in secret_numbers
     )
+
+
+def tabulate_combo_bananas(
+    secret_numbers: list[int],
+) -> Counter[tuple[int, int, int, int]]:
+    combo_bananas = Counter()
+    for n in secret_numbers:
+        lastn = n
+        combo = []
+        seen_combos = set()
+        for _i in range(4):
+            nextn = find_next_secret_number(lastn)
+            combo.append(nextn % 10 - lastn % 10)
+            lastn = nextn
+        combo = tuple(combo)
+        for _i in range(4, 2000):
+            if combo not in seen_combos:
+                combo_bananas[combo] += lastn % 10
+                seen_combos.add(combo)
+            nextn = find_next_secret_number(lastn)
+            combo = (combo[1], combo[2], combo[3], nextn % 10 - lastn % 10)
+            lastn = nextn
+        if combo not in seen_combos:
+            combo_bananas[combo] += lastn % 10
+            seen_combos.add(combo)
+    return combo_bananas
+
+
+def solve_2(secret_numbers: list[int]) -> int:
+    combo_bananas = tabulate_combo_bananas(secret_numbers)
+    return combo_bananas.most_common(n=1)[0][1]
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -38,6 +69,8 @@ def main(argv: list[str] | None = None) -> None:
     start = timeit.default_timer()
     if "1" in argv:
         print(solve_1(codes))
+    if "2" in argv:
+        print(solve_2(codes))
 
     stop = timeit.default_timer()
     if "time" in argv:
